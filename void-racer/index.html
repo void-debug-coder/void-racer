@@ -14,9 +14,9 @@
         #startScreen p{margin:8px 0;font-size:1rem;color:#0ff}
         #startScreen button{background:#0f0;color:#000;border:none;padding:18px 40px;font-size:1.3rem;font-weight:900;font-family:'Orbitron';cursor:pointer;margin-top:25px}
         #startScreen button:active{transform:scale(0.95)}
-       .controls{position:absolute;bottom:20px;left:0;right:0;display:flex;justify-content:center;gap:60px}
-       .control-btn{width:70px;height:70px;background:rgba(0,255,0,0.2);border:2px solid #0f0;border-radius:50%;color:#0f0;font-size:2rem;display:flex;align-items:center;justify-content:center;user-select:none}
-       .control-btn:active{background:#0f0;color:#000}
+      .controls{position:absolute;bottom:20px;left:0;right:0;display:flex;justify-content:center;gap:60px}
+      .control-btn{width:70px;height:70px;background:rgba(0,255,0,0.2);border:2px solid #0f0;border-radius:50%;color:#0f0;font-size:2rem;display:flex;align-items:center;justify-content:center;user-select:none}
+      .control-btn:active{background:#0f0;color:#000}
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 </head>
@@ -60,22 +60,19 @@ const roadWidth = 300
 const roadX = (canvas.width - roadWidth) / 2
 const laneWidth = roadWidth / 3
 
-// Player car
 const player = {
     x: roadX + laneWidth,
     y: canvas.height - 120,
     w: 40,
     h: 70,
-    lane: 1, // 0,1,2
+    lane: 1,
     targetX: roadX + laneWidth
 }
 
-// Obstacles + fuel
 let obstacles = []
 let fuels = []
 let roadLines = []
 
-// Init road lines
 for(let i = 0; i < 10; i++) {
     roadLines.push({ y: i * 80 })
 }
@@ -122,7 +119,6 @@ function spawnFuel() {
 function gameLoop() {
     if (!gameRunning) return
 
-    // Speed increase
     gameSpeed = 4 + score * 0.01
     fuel -= 0.05
 
@@ -131,15 +127,12 @@ function gameLoop() {
         return
     }
 
-    // Clear
     ctx.fillStyle = '#111'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    // Road
     ctx.fillStyle = '#222'
     ctx.fillRect(roadX, 0, roadWidth, canvas.height)
 
-    // Road lines
     ctx.strokeStyle = '#0f0'
     ctx.lineWidth = 4
     ctx.setLineDash([20, 20])
@@ -155,7 +148,6 @@ function gameLoop() {
     })
     ctx.setLineDash([])
 
-    // Road edges
     ctx.strokeStyle = '#0f0'
     ctx.shadowColor = '#0f0'
     ctx.shadowBlur = 15
@@ -168,10 +160,8 @@ function gameLoop() {
     ctx.stroke()
     ctx.shadowBlur = 0
 
-    // Player movement
     player.x += (player.targetX - player.x) * 0.2
 
-    // Draw player
     ctx.fillStyle = '#0ff'
     ctx.shadowColor = '#0ff'
     ctx.shadowBlur = 20
@@ -180,12 +170,10 @@ function gameLoop() {
     ctx.fillRect(player.x + 10, player.y + 10, player.w - 20, 20)
     ctx.shadowBlur = 0
 
-    // Obstacles
     spawnObstacle()
     obstacles.forEach((obs, i) => {
         obs.y += gameSpeed
 
-        // Draw firewall
         ctx.fillStyle = '#f00'
         ctx.shadowColor = '#f00'
         ctx.shadowBlur = 15
@@ -195,7 +183,6 @@ function gameLoop() {
         ctx.fillText('🚧', obs.x + 10, obs.y + 45)
         ctx.shadowBlur = 0
 
-        // Collision
         if (player.x < obs.x + obs.w &&
             player.x + player.w > obs.x &&
             player.y < obs.y + obs.h &&
@@ -206,12 +193,10 @@ function gameLoop() {
         if (obs.y > canvas.height) obstacles.splice(i, 1)
     })
 
-    // Fuel pickups
     spawnFuel()
     fuels.forEach((f, i) => {
         f.y += gameSpeed
 
-        // Draw fuel
         ctx.fillStyle = '#0f0'
         ctx.shadowColor = '#0f0'
         ctx.shadowBlur = 20
@@ -219,7 +204,6 @@ function gameLoop() {
         ctx.fillText('⚡', f.x, f.y + 25)
         ctx.shadowBlur = 0
 
-        // Collect
         if (player.x < f.x + f.w &&
             player.x + player.w > f.x &&
             player.y < f.y + f.h &&
@@ -232,7 +216,6 @@ function gameLoop() {
         if (f.y > canvas.height) fuels.splice(i, 1)
     })
 
-    // Score
     score += 0.1
     scoreEl.textContent = Math.floor(score)
     fuelEl.textContent = Math.floor(fuel)
@@ -253,7 +236,6 @@ function gameOver() {
     startScreen.querySelector('button').textContent = 'RETRY'
 }
 
-// Controls
 function moveLeft() {
     if (gameRunning && player.lane > 0) {
         player.lane--
@@ -268,13 +250,11 @@ function moveRight() {
     }
 }
 
-// Touch/Click
 document.getElementById('leftBtn').addEventListener('touchstart', moveLeft)
 document.getElementById('leftBtn').addEventListener('click', moveLeft)
 document.getElementById('rightBtn').addEventListener('touchstart', moveRight)
 document.getElementById('rightBtn').addEventListener('click', moveRight)
 
-// Swipe
 let touchStartX = 0
 canvas.addEventListener('touchstart', e => {
     touchStartX = e.touches[0].clientX
@@ -285,11 +265,10 @@ canvas.addEventListener('touchend', e => {
     if (diff < -50) moveLeft()
 })
 
-// Keyboard
 document.addEventListener('keydown', e => {
     if (e.code === 'ArrowLeft' || e.code === 'KeyA') moveLeft()
     if (e.code === 'ArrowRight' || e.code === 'KeyD') moveRight()
 })
 </script>
 </body>
-  </html>
+</html>
